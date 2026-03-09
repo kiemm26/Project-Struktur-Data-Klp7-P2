@@ -13,6 +13,7 @@ Features:
 
 Dataset:
 Online Retail II Dataset (UCI Machine Learning Repository)
+https://archive.ics.uci.edu/dataset/502/online+retail+ii
 
 Structures used:
 - unordered_map (hash table)
