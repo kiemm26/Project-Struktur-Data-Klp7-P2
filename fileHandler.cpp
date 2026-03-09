@@ -61,5 +61,3 @@ vector<Data> FileHandler::readCSV(string filename)
 
       return dataset;
 }
-
-
