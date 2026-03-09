@@ -1,4 +1,5 @@
-# Project-Struktur-Data-Kelompok10
+# Project-Struktur-Data-Kelompok7
+
 Duplicate data detection system implemented in C++ using hash tables and large-scale dataset processing.
 
 # Duplicate Data Detection System
