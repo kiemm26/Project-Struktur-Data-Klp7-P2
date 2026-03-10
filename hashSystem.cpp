@@ -1,13 +1,9 @@
 #include "hashSystem.h"
 #include <iostream>
 #include <fstream>
-
-using namespace std;
-
 string generateKey(Data d)
 {
-      // duplicate if Invoice (id), StockCode (`content`) and Quantity (`size`) are the same
-      return to_string(d.id) + "_" + d.content + "_" + to_string(d.size);
+      return d.content + "_" + to_string(d.size);
 }
 
 void HashSystem::insert(Data d)
@@ -28,7 +24,6 @@ void HashSystem::showDuplicates()
 {
 
       ofstream out("output/duplicates.txt");
-
       if (!out.is_open())
       {
             cout << "Gagal membuka file output\n";
@@ -36,83 +31,49 @@ void HashSystem::showDuplicates()
       }
 
       int groupCount = 0;
-
       for (auto &pair : table)
       {
-
             if (pair.second.size() > 1)
             {
-
                   groupCount++;
-
                   out << "Duplicate group " << groupCount << ":\n";
-
                   for (auto &d : pair.second)
                   {
                         out << d.id << " " << d.name << "\n";
                   }
-
                   out << "\n";
             }
       }
 
       out.close();
-
-      cout << "Duplicate list berhasil disimpan di output/duplicates.txt\n";
+      cout << "Duplicate list disimpan di output/duplicates.txt\n";
 }
-// void HashSystem::showDuplicates()
-// {
-
-//       for (auto &pair : table)
-//       {
-
-//             if (pair.second.size() > 1)
-//             {
-
-//                   cout << "Duplicate group:\n";
-
-//                   for (auto &d : pair.second)
-//                   {
-//                         cout << d.id << " " << d.name << " " << d.size << endl;
-//                   }
-
-//                   cout << endl;
-//             }
-//       }
-// }
 
 int HashSystem::countUnique()
 {
-
       int uniqueCount = 0;
-
       for (auto &pair : table)
       {
             if (pair.second.size() == 1)
                   uniqueCount++;
       }
-
       return uniqueCount;
 }
 
 int HashSystem::countDuplicate()
 {
-
       int dup = 0;
-
       for (auto &pair : table)
       {
             if (pair.second.size() > 1)
                   dup += pair.second.size();
       }
-
       return dup;
 }
+
 void HashSystem::saveStatistics(int totalData, double executionTime)
 {
-
       ofstream out("output/statistics.txt");
-
       if (!out.is_open())
       {
             cout << "Gagal membuka file statistik\n";
@@ -125,6 +86,5 @@ void HashSystem::saveStatistics(int totalData, double executionTime)
       out << "Execution Time: " << executionTime << " seconds\n";
 
       out.close();
-
       cout << "Statistik disimpan di output/statistics.txt\n";
 }

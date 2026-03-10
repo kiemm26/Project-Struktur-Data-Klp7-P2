@@ -1,51 +1,31 @@
 #include <iostream>
-#include <fstream>
-#include <chrono>
+#include <vector>
+
+#include "data.h"
+#include "linkedList.h"
 #include "fileHandler.h"
-#include "hashSystem.h"
 
 using namespace std;
-
-void saveBenchmark(int dataSize, double time)
-{
-
-      ofstream out("output/benchmark.csv", ios::app);
-
-      out << dataSize << "," << time << "\n";
-
-      out.close();
-}
 
 int main()
 {
 
-      vector<Data> dataset = FileHandler::readCSV("dataset/dataset.csv");
+      LinkedList list;
+      vector<Data> dataset = readCSV("dataset/dataset.csv");
 
-      HashSystem system;
+      cout << "Dataset loaded : " << dataset.size() << endl;
 
-      auto start = chrono::high_resolution_clock::now();
-
-      for (auto &d : dataset)
+      for (Data d : dataset)
       {
-            system.insert(d);
+            list.insert(d);
       }
 
-      auto end = chrono::high_resolution_clock::now();
+      cout << "Data inserted to LinkedList" << endl;
+      cout << "Total data in system : " << list.count() << endl;
+      cout << endl;
+      cout << "Sample data : " << endl;
 
-      chrono::duration<double> elapsed = end - start;
+      list.printAll();
 
-      system.showDuplicates();
-      cout << "Total data: " << dataset.size() << endl;
-      cout << "Unique data: " << system.countUnique() << endl;
-      cout << "Duplicate data: " << system.countDuplicate() << endl;
-
-      cout << "Execution time: " << elapsed.count() << " seconds\n";
-
-      // simpan hasil dan benchmark
-      system.saveStatistics(dataset.size(), elapsed.count());
-      saveBenchmark(dataset.size(), elapsed.count());
-
-      cout << "\nDuplicate list:\n";
-
-      cout << "Dataset loaded: " << dataset.size() << endl;
+      return 0;
 }

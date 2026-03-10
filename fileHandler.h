@@ -4,10 +4,6 @@
 #include <vector>
 #include "data.h"
 
-class FileHandler
-{
-public:
-      static vector<Data> readCSV(string filename);
-};
+vector<Data> readCSV(string filename);
 
 #endif

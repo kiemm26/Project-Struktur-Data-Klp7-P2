@@ -1,4 +1,3 @@
-
 #ifndef HASHSYSTEM_H
 #define HASHSYSTEM_H
 
@@ -19,5 +18,4 @@ public:
       int countUnique();
       int countDuplicate();
 };
-
 #endif

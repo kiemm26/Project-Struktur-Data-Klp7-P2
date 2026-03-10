@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/muhammadhamdi/Documents/-Semester_4/Strukdat/Tugas Project/duplikate-detection",
+      "program": "/Users/muhammadhamdi/Documents/-Semester_4/Strukdat/Tugas Project/duplikate-detection/build/Debug/outDebug"
+    }
+  ]
+}
