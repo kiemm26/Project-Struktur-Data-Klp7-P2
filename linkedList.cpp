@@ -132,28 +132,39 @@ void LinkedList::detectDuplicateByContent()
 void LinkedList::detectDuplicateByMetadata()
 {
       resetDuplicate();
-      ofstream out("output/result.txt");
+
+      ofstream out("output/result.txt", ios::trunc);
 
       Node *curr1 = head;
+      int group = 1;
 
       while (curr1 != NULL)
       {
-            Node *curr2 = curr1->next;
-            while (curr2 != NULL)
+            if (!curr1->isDuplicate)
             {
-                  if (curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size)
+                  Node *curr2 = curr1->next;
+                  bool found = false;
+
+                  while (curr2 != NULL)
                   {
+                        if (curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size)
+                        {
+                              if (!found)
+                              {
+                                    out << "Duplicate Group " << group++ << " (Metadata)\n\n";
+                                    out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.size << endl;
 
-                        curr1->isDuplicate = true;
-                        curr2->isDuplicate = true;
+                                    curr1->isDuplicate = true;
+                                    found = true;
+                              }
+                              out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.size << endl;
 
-                        out << "Duplicate Found (Metadata): " << endl;
-                        out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.size << endl;
-
-                        out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.size << endl;
-                        out << endl;
+                              curr2->isDuplicate = true;
+                        }
+                        curr2 = curr2->next;
                   }
-                  curr2 = curr2->next;
+                  if (found)
+                        out << "\n";
             }
             curr1 = curr1->next;
       }

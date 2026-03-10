@@ -50,7 +50,7 @@ vector<Data> readCSV(string filename)
 
             getline(ss, d.upload_date, ',');
             getline(ss, d.source, ',');
-            getline(ss, d.content, ',');
+            getline(ss, d.content);
 
             dataset.push_back(d);
             count++;
