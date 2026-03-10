@@ -1,3 +1,5 @@
+hashSystem.h
+hashSystem.cpp
 output/
 main
 *.o
