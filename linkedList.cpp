@@ -104,29 +104,42 @@ void LinkedList::detectDuplicateByContent()
       ofstream out("output/result.txt");
 
       Node *curr1 = head;
+      int group = 1;
 
       while (curr1 != NULL)
       {
-            Node *curr2 = curr1->next;
-
-            while (curr2 != NULL)
+            if (!curr1->isDuplicate)
             {
-                  if (curr1->data.content == curr2->data.content)
+                  Node *curr2 = curr1->next;
+                  bool found = false;
+
+                  while (curr2 != NULL)
                   {
-                        curr1->isDuplicate = true;
-                        curr2->isDuplicate = true;
+                        if (curr1->data.content == curr2->data.content)
+                        {
+                              if (!found)
+                              {
+                                    out << "Duplicate Group " << group++ << " (Content)\n"
+                                        << endl;
+                                    out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.content << endl;
 
-                        out << "Duplicate Found (Content): " << endl;
-                        out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.content << endl;
-                        out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.content << endl;
+                                    curr1->isDuplicate = true;
+                                    found = true;
+                              }
 
-                        out << endl;
+                              out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.content << endl;
+
+                              curr2->isDuplicate = true;
+                        }
+                        curr2 = curr2->next;
                   }
-                  curr2 = curr2->next;
+                  if (found)
+                        out << "\n";
             }
             curr1 = curr1->next;
       }
       out.close();
+      cout << "Duplicate detection finished. Result saved to output/result.txt\n";
 }
 
 void LinkedList::detectDuplicateByMetadata()
@@ -175,25 +188,41 @@ void LinkedList::detectDuplicateByMetadata()
 void LinkedList::detectDuplicateByFullData()
 {
       resetDuplicate();
-      ofstream out("output/result.txt");
+
+      ofstream out("output/result.txt", ios::trunc);
+
       Node *curr1 = head;
+
+      int group = 1;
 
       while (curr1 != NULL)
       {
-            Node *curr2 = curr1->next;
-            while (curr2 != NULL)
+            if (!curr1->isDuplicate)
             {
-                  if (curr1->data.id == curr2->data.id && curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size && curr1->data.upload_date == curr2->data.upload_date && curr1->data.source == curr2->data.source && curr1->data.content == curr2->data.content)
+                  Node *curr2 = curr1->next;
+
+                  bool found = false;
+
+                  while (curr2 != NULL)
                   {
-                        curr1->isDuplicate = true;
-                        curr2->isDuplicate = true;
+                        if (curr1->data.id == curr2->data.id && curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size && curr1->data.upload_date == curr2->data.upload_date && curr1->data.source == curr2->data.source && curr1->data.content == curr2->data.content)
+                        {
+                              if (!found)
+                              {
+                                    out << "Duplicate Group " << group++ << " (Full Data)\n\n";
 
-                        out << "Duplicate (Full Data):\n";
-                        out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.size << " | " << curr1->data.upload_date << " | " << curr1->data.source << " | " << curr1->data.content << endl;
+                                    out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.size << " | " << curr1->data.upload_date << " | " << curr1->data.source << " | " << curr1->data.content << endl;
 
-                        out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.size << " | " << curr2->data.upload_date << " | " << curr2->data.source << " | " << curr2->data.content << endl;
+                                    curr1->isDuplicate = true;
+                                    found = true;
+                              }
+                              out << curr2->data.id << " | " << curr2->data.name << " | " << curr2->data.size << " | " << curr2->data.upload_date << " | " << curr2->data.source << " | " << curr2->data.content << endl;
+                              curr2->isDuplicate = true;
+                        }
+                        curr2 = curr2->next;
                   }
-                  curr2 = curr2->next;
+                  if (found)
+                        out << "\n";
             }
             curr1 = curr1->next;
       }
@@ -221,7 +250,6 @@ void LinkedList::printDuplicates()
             {
                   cout << curr->data.id << " | " << curr->data.name << " | " << curr->data.size << " | " << curr->data.upload_date << " | " << curr->data.source << " | " << curr->data.content << endl;
             }
-
             curr = curr->next;
       }
 }
