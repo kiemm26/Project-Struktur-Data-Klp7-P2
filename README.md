@@ -70,8 +70,6 @@ duplicate-detection/
 
 Setiap arsip memiliki atribut berikut:
 
----
-
 ```
 Data
 ├── id          -> ID unik file
@@ -86,8 +84,6 @@ Data
 
 ## Node Linked List
 Setiap node pada Linked List mempunyai satu data arsip.
-
----
 
 ```
 Node
@@ -120,12 +116,12 @@ Prosesnya:
 3.  Memasukkan data ke dalam `vector`
 4.  Menyimpan data ke dalam Linked List menggunakan fungsi `insert()`
 
-
+---
 # Mekanisme Deteksi Duplikasi
 
 Sistem mendukung tiga metode deteksi duplikasi:
 
-##1.  **Content**
+1.  **Content**
 Dua data dianggap duplikat jika memiliki nilai content yang sama.
 
 ```
@@ -134,7 +130,7 @@ if(dataA.content == dataB.content)
 
 Metode ini mensimulasikan deteksi file identik berdasarkan hash isi file.
 
-##2.  **Metadata (name + size)**
+2.  **Metadata (name + size)**
 Duplikasi dideteksi menggunakan kombinasi:
 ```
 name + size
@@ -144,7 +140,7 @@ if(dataA.name == dataB.name && dataA.size == dataB.size)
 ```
 Metode ini sering digunakan pada sistem penyimpanan untuk mendeteksi kemungkinan file duplikat.
 
-##3.  **Full data comparison**
+3.  **Full data comparison**
 
 Semua atribut dibandingkan.
 
@@ -183,8 +179,8 @@ dimana `n` adalah jumlah data dalam sistem.
 1.  Insert Data
 Menambahkan data arsip baru ke dalam sistem.
 
-3.  Search Data
- - Pencarian data berdasarkan:
+2.  Search Data
+Pencarian data berdasarkan:
  - ID
  - Nama file
  - Kombinasi ID dan nama
@@ -203,7 +199,7 @@ Menampilkan data yang tersimpan dalam sistem.
 Pilihan tampilan:
  - seluruh data
  - hanya data duplikat
- - 
+   
 5.  Delete Data
 Menghapus data arsip berdasarkan ID.
 
@@ -244,8 +240,6 @@ Duplicate Detection
 # Kompleksitas Operasi
 
 Operasi Kompleksitas
-
----
 
 | Operasi | Kompleksitas |
 | ------ | ------ |
