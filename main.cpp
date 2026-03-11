@@ -23,7 +23,6 @@ void showMenu()
 
 int main()
 {
-
       LinkedList list;
 
       long insertTime = 0;
@@ -45,7 +44,9 @@ int main()
             showMenu();
             cin >> choice;
             // INSERT DATA
-            if (choice == 1)
+            switch (choice)
+            {
+            case 1:
             {
                   Data d;
 
@@ -55,10 +56,10 @@ int main()
                   cout << "Name: ";
                   cin >> d.name;
 
-                  cout << "Size: ";
+                  cout << "Size (KB): ";
                   cin >> d.size;
 
-                  cout << "Upload date: ";
+                  cout << "Upload date (yyyy-mm-dd): ";
                   cin >> d.upload_date;
 
                   cout << "Source: ";
@@ -75,9 +76,10 @@ int main()
                   insertTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
                   cout << "Data inserted successfully!" << endl;
+                  break;
             }
             // SEARCH DATA
-            else if (choice == 2)
+            case 2:
             {
                   int option;
 
@@ -157,9 +159,10 @@ int main()
                         auto end = chrono::high_resolution_clock::now();
                         searchTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
                   }
+                  break;
             }
             // DETECT DUPLICATE
-            else if (choice == 3)
+            case 3:
             {
                   int option;
 
@@ -189,9 +192,10 @@ int main()
 
                   auto end = chrono::high_resolution_clock::now();
                   detectTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+                  break;
             }
             // SHOW DATA
-            else if (choice == 4)
+            case 4:
             {
                   int option;
                   cout << endl;
@@ -214,9 +218,10 @@ int main()
 
                   auto end = chrono::high_resolution_clock::now();
                   showTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+                  break;
             }
             // DELETE DATA
-            else if (choice == 5)
+            case 5:
             {
                   string id;
                   cout << "Enter ID to delete: ";
@@ -228,9 +233,10 @@ int main()
 
                   auto end = chrono::high_resolution_clock::now();
                   deleteTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+                  break;
             }
             // STATISTICS
-            else if (choice == 6)
+            case 6:
             {
                   int total = list.count();
                   int duplicate = list.countDuplicate();
@@ -246,16 +252,19 @@ int main()
                   cout << "Delete Time : " << deleteTime << endl;
                   cout << "Show Time : " << showTime << endl;
                   cout << "Duplicate Detection Time : " << detectTime << endl;
-            }
-            // EXIT
-            else if (choice == 7)
-            {
-                  cout << "Program Ended" << endl;
                   break;
             }
-            else
+            // EXIT
+            case 7:
+            {
+                  cout << "Program Ended" << endl;
+                  return 0;
+            }
+            default:
             {
                   cout << "Invalid menu!" << endl;
+                  break;
+            }
             }
       }
 
