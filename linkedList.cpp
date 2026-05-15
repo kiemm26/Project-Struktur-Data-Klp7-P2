@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "linkedList.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -121,8 +122,7 @@ void LinkedList::detectDuplicateByContent()
                         {
                               if (!found)
                               {
-                                    out << "Duplicate Group " << group++ << " (Content)\n"
-                                        << endl;
+                                    out << "Duplicate Group " << group++ << " (Content)\n" << endl;
                                     out << curr1->data.id << " | " << curr1->data.name << " | " << curr1->data.content << endl;
 
                                     curr1->isDuplicate = true;
@@ -233,6 +233,16 @@ void LinkedList::detectDuplicateByFullData()
       out.close();
 }
 
+string truncateText(string text, int width)
+{
+      if (text.length() <= width)
+      {
+            return text;
+      }
+
+      return text.substr(0, width - 3) + "...";
+}
+
 void LinkedList::printAll()
 {
       vector<Node *> rows;
@@ -269,13 +279,21 @@ void LinkedList::printAll()
             }
 
             cout << "\n+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
-            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source                     | Content                    |" << endl;
             cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
 
             for (int i = start; i < end; i++)
             {
                   Data d = rows[i]->data;
-                  cout << "| " << left << setw(2) << (i + 1) << " | " << setw(10) << d.id << " | " << setw(20) << d.name << " | " << setw(9) << d.size << " | " << setw(12) << d.upload_date << " | " << setw(20) << d.source << " | " << setw(30) << d.content << "|" << endl;
+                  cout  << "| " << left 
+                        << setw(2) << (i + 1) << " | " 
+                        << setw(10) << d.id << " | " 
+                        << setw(20) << truncateText(d.name, 18) << " | " 
+                        << setw(9) << d.size << " | " 
+                        << setw(12) << d.upload_date << " | " 
+                        << setw(26) << truncateText(d.source, 26) << " | " 
+                        << setw(27) << truncateText(d.content, 26) << "|" 
+                        << endl;
             }
 
             cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
@@ -388,14 +406,22 @@ void LinkedList::printDuplicates()
             }
             cout << endl;
 
-            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
-            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+            cout << "\n+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source                     | Content                    |" << endl;
             cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
 
             for (size_t i = 0; i < groups[g].size(); i++)
             {
                   Data d = groups[g][i]->data;
-                  cout << "| " << left << setw(2) << (shown + 1) << " | " << setw(10) << d.id << " | " << setw(20) << d.name << " | " << setw(9) << d.size << " | " << setw(12) << d.upload_date << " | " << setw(20) << d.source << " | " << setw(30) << d.content << "|" << endl;
+                  cout  << "| " << left
+                        << setw(2) << (shown + 1) << " | "
+                        << setw(10) << d.id << " | "
+                        << setw(20) << truncateText(d.name, 20) << " | "
+                        << setw(9) << d.size << " | "
+                        << setw(12) << d.upload_date << " | "
+                        << setw(26) << truncateText(d.source, 26) << " | "
+                        << setw(27) << truncateText(d.content, 26) << "|"
+                        << endl;
 
                   shown++;
                   if (shown % pageSize == 0)
@@ -408,8 +434,8 @@ void LinkedList::printDuplicates()
                         {
                               return;
                         }
-                        cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
-                        cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+                        cout << "\n+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+                        cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source                     | Content                    |" << endl;
                         cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
                   }
             }
@@ -417,6 +443,7 @@ void LinkedList::printDuplicates()
             cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
       }
 }
+
 void LinkedList::showStatistics(long insertTime, long searchTime, long deleteTime, long showTime, long detectTime)
 {
       int total = count();
@@ -434,7 +461,6 @@ void LinkedList::showStatistics(long insertTime, long searchTime, long deleteTim
       cout << "Show Time : " << showTime << endl;
       cout << "Duplicate Detection Time : " << detectTime << endl;
 }
-
 
 void LinkedList::deleteByID(string id)
 {
