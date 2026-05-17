@@ -8,10 +8,12 @@ memungkinkan pengguna untuk menambahkan data arsip, mencari data,
 menghapus data, menampilkan seluruh data, serta mendeteksi data duplikat
 berdasarkan beberapa kriteria.
 
-Pada implementasi ini, data arsip disimpan menggunakan **struktur data
-Linked List**. Struktur ini dipilih karena fleksibel untuk operasi
-penyisipan data secara dinamis serta mudah diimplementasikan untuk
-kebutuhan eksplorasi struktur data dasar.
+Pada implementasi ini, terdapat **tiga pilihan struktur data** yang dapat
+digunakan dan dibandingkan performanya:
+
+- **Linked List** — penyisipan O(1), fleksibel, implementasi paling sederhana
+- **Hash Table** — pencarian & penyisipan O(1) amortised, paling cepat untuk lookup
+- **AVL Tree** — BST self-balancing, pencarian O(log n), data selalu terurut by ID
 
 Selain itu, sistem juga mampu melakukan **deteksi duplikasi data
 menggunakan beberapa metode**, yaitu:
@@ -38,7 +40,7 @@ dataset.csv
       ↓
 readCSV()
       ↓
-Linked List (runtime storage)
+Struktur Data Pilihan (Linked List / Hash Table / AVL Tree)
       ↓
 Operasi sistem (insert, search, delete, show, detect duplicate)
       ↓
@@ -55,12 +57,14 @@ duplicate-detection/
 |     ├── fileHandler.h              - deklarasi fungsi pembaca dataset
 |     ├── data.h                     - struktur data arsip
 |     ├── linkedList.h               - deklarasi Linked List
-|     └── hashSystem.h               - deklarasi Hash Table
+|     ├── hashSystem.h               - deklarasi Hash Table
+|     └── avlSystem.h                - deklarasi AVL Tree
 ├── src/
 |     ├── main.cpp                   - program utama dan menu sistem
 |     ├── fileHandler.cpp            - membaca dataset CSV
 |     ├── linkedList.cpp             - implementasi Linked List
-|     └── hashSystem.cpp             - implementasi Hash Table
+|     ├── hashSystem.cpp             - implementasi Hash Table
+|     └── avlSystem.cpp              - implementasi AVL Tree
 ├── public/
 |     └── dataset.csv          - dataset arsip
 └── output/
@@ -86,7 +90,7 @@ Data
 
 ---
 
-## Node Linked List
+## 1. Node Linked List
 Setiap node pada Linked List mempunyai satu data arsip.
 
 ```
@@ -95,6 +99,34 @@ Node
 ├── isDuplicate     -> penanda apakah data merupakan duplikat
 └── next            -> pointer ke node berikutnya
 ```
+
+## 2. Node Hash Table
+
+```
+HashNode
+├── Data            -> informasi arsip
+├── isDuplicate     -> penanda apakah data merupakan duplikat
+└── next            -> pointer untuk chaining tabrakan hash
+```
+
+## 3. Node AVL Tree
+
+```
+AVLNode
+├── Data            -> informasi arsip
+├── isDuplicate     -> penanda apakah data merupakan duplikat
+├── height          -> tinggi subtree (untuk menghitung balance factor)
+├── left            -> pointer ke child kiri  (key < node.id)
+└── right           -> pointer ke child kanan (key >= node.id)
+```
+
+**Balance Factor (BF)** = `height(left) − height(right)`
+
+AVL invariant: BF ∈ {−1, 0, 1} untuk setiap node. Jika BF dilanggar
+setelah insert atau delete, sistem melakukan rotasi otomatis untuk
+mengembalikan keseimbangan.
+
+---
 
 # Dataset
 
@@ -107,7 +139,7 @@ id,name,size,upload_date,source,content
 Contoh:
 
 ```
-004901,ClimateRepo.pdf,2048,2004-07-24,JohnSmith,a81f3c92d11a0e5b\
+004901,ClimateRepo.pdf,2048,2004-07-24,JohnSmith,a81f3c92d11a0e5b
 004912,ClimateRepo_copy.pdf,2048,2004-07-24,JohnSmith,a81f3c92d11a0e5b
 ```
 ---
@@ -115,10 +147,10 @@ Contoh:
 Dataset dimuat menggunakan fungsi `readCSV()`.
 Prosesnya:
 
-1.  Membaca file CSV
+1.  Membuka file CSV
 2.  Parsing setiap baris menjadi objek `Data`
 3.  Memasukkan data ke dalam `vector`
-4.  Menyimpan data ke dalam Linked List menggunakan fungsi `insert()`
+4.  Menyimpan data ke dalam struktur data aktif menggunakan fungsi `insert()`
 
 ---
 # Mekanisme Deteksi Duplikasi
@@ -149,12 +181,7 @@ Metode ini sering digunakan pada sistem penyimpanan untuk mendeteksi kemungkinan
 Semua atribut dibandingkan.
 
 ```
-id
-name
-size
-upload_date
-source
-content
+id, name, size, upload_date, source, content
 ```
 Jika semua atribut sama maka data dianggap duplikat.
 
@@ -162,19 +189,69 @@ Jika semua atribut sama maka data dianggap duplikat.
 
 # Algoritma Duplicate Detection
 
-Pseudo code:
+## Linked List — O(n²)
 
 ```
-for each node A\
- for each node B setelah A\
-  if data sama → tandai duplicate
+for each node A
+  for each node B setelah A
+    if data sama → tandai duplicate
 ```
 
-Kompleksitas:
+## Hash Table & AVL Tree — O(n) / O(n log n)
+
+Menggunakan mini hash bucket internal untuk grouping duplikat:
+
 ```
-O(n²)
+inorder traversal → kumpulkan semua node ke vector
+for each node
+  hitung composite key (content / name+size / all fields)
+  masukkan ke bucket sesuai hash key
+for each bucket
+  jika ukuran bucket > 1 → semua node dalam bucket adalah duplikat
 ```
-dimana `n` adalah jumlah data dalam sistem.
+
+Pendekatan ini menghindari nested loop O(n²) dan menurunkan kompleksitas
+deteksi menjadi O(n) untuk Hash Table dan O(n log n) untuk AVL Tree
+(karena inorder traversal O(n) + insert ke bucket O(1) amortised).
+
+---
+
+# Mekanisme AVL Tree
+
+## Rotasi
+
+AVL Tree mempertahankan keseimbangan melalui empat jenis rotasi:
+
+| Kasus | Kondisi | Rotasi |
+|-------|---------|--------|
+| LL (Left-Left) | BF(node)=+2, BF(left)≥0 | `rotateRight(node)` |
+| RR (Right-Right) | BF(node)=−2, BF(right)≤0 | `rotateLeft(node)` |
+| LR (Left-Right) | BF(node)=+2, BF(left)<0 | `rotateLeft(left)` → `rotateRight(node)` |
+| RL (Right-Left) | BF(node)=−2, BF(right)>0 | `rotateRight(right)` → `rotateLeft(node)` |
+
+## Insert Rebalancing
+
+Setiap insert dilakukan secara rekursif. Setelah menyisipkan node baru,
+fungsi `rebalance()` dipanggil pada perjalanan balik (post-order) rekursi
+di setiap node sepanjang jalur dari leaf ke root. Dengan demikian seluruh
+jalur ter-rebalance secara otomatis dalam satu pass.
+
+## Delete Rebalancing
+
+Delete menggunakan strategi **in-order successor**:
+
+- Node dengan 0 atau 1 child → hapus langsung, ganti dengan child-nya.
+- Node dengan 2 child → salin data dari in-order successor (node terkecil
+  di subtree kanan), kemudian hapus successor tersebut.
+
+`rebalance()` dipanggil pada perjalanan balik rekursi, menjamin AVL
+invariant terjaga sepanjang jalur yang terpengaruh.
+
+## Traversal
+
+AVL Tree menggunakan **inorder traversal** (kiri → node → kanan)
+sehingga data selalu tampil **terurut berdasarkan ID** secara otomatis
+tanpa proses sorting tambahan.
 
 ---
 
@@ -188,22 +265,24 @@ Pencarian data berdasarkan:
  - ID
  - Nama file
  - Kombinasi ID dan nama
-   
+
 3.  Detect Duplicate
 Mendeteksi data duplikat menggunakan tiga metode:
  - Based on Content
  - Based on Metadata
  - Based on Full Data
+
 Hasil deteksi disimpan ke dalam file:
 ```
 output/result.txt
 ```
+
 4.  Show Data
 Menampilkan data yang tersimpan dalam sistem.
 Pilihan tampilan:
  - seluruh data
  - hanya data duplikat
-   
+
 5.  Delete Data
 Menghapus data arsip berdasarkan ID.
 
@@ -237,42 +316,61 @@ Operasi yang diukur:
  - Search
  - Delete
  - Show
+ - Duplicate Detection
 
-Duplicate Detection
 ---
 
 # Kompleksitas Operasi
 
-Operasi Kompleksitas
+| Operasi | Linked List | Hash Table | AVL Tree |
+|---------|-------------|------------|----------|
+| Insert | O(1) | O(1) amortised | O(log n) |
+| Search by ID | O(n) | O(1) amortised | O(log n) |
+| Search by Name | O(n) | O(n) | O(n) |
+| Delete | O(n) | O(1) amortised | O(log n) |
+| Show Data | O(n) | O(n) | O(n) |
+| Detect Duplicate | O(n²) | O(n) | O(n log n) |
 
-| Operasi | Kompleksitas |
-| ------ | ------ |
-| Insert | O(1) |
-| Search | O(n) |
-| Delete | O(n) |
-| Show Data | O(n) |
-| Detect Duplicate | O(n²) |
+Dimana `n` = jumlah data arsip dalam sistem.
 
-Dimana:
-```
-n = jumlah data arsip
-```
-Operasi duplicate detection memiliki kompleksitas terbesar karena setiap data harus dibandingkan dengan seluruh data lainnya.
+**Catatan perbandingan:**
+- **Linked List** paling sederhana, cocok untuk dataset kecil.
+- **Hash Table** tercepat untuk insert/search/delete dan deteksi duplikat.
+- **AVL Tree** unggul dibanding Linked List di semua operasi utama, dan
+  memberikan keuntungan tambahan berupa data yang selalu **terurut by ID**
+  tanpa biaya sorting tambahan — ideal untuk laporan yang memerlukan urutan.
 
 ---
 
 # Cara Menjalankan Program
 
-Compile:
+## Toggle Struktur Data
 
-```
-g++ *.cpp -o program1
+Edit bagian atas `src/main.cpp`, aktifkan salah satu define:
+
+```cpp
+// #define USE_LINKED_LIST
+// #define USE_HASH_SYSTEM
+#define USE_AVL_SYSTEM
 ```
 
-Run:
+## Compile
 
+```bash
+# Linked List
+g++ -std=c++17 src/main.cpp src/fileHandler.cpp src/linkedList.cpp -o program_ll
+
+# Hash Table
+g++ -std=c++17 src/main.cpp src/fileHandler.cpp src/hashSystem.cpp -o program_hash
+
+# AVL Tree
+g++ -std=c++17 src/main.cpp src/fileHandler.cpp src/avlSystem.cpp -o program_avl
 ```
-./program1
+
+## Run
+
+```bash
+./program_ll     # atau program_hash / program_avl
 ```
 
 ---
@@ -280,8 +378,10 @@ Run:
 # Teknologi yang Digunakan
 
 - C++17
-- STL (`vector`,`string`)
+- STL (`vector`, `string`)
 - Linked List
+- Hash Table (separate chaining)
+- AVL Tree (self-balancing BST)
 - chrono library
 - CSV file handling
 
@@ -289,8 +389,8 @@ Run:
 
 # Pengembangan Selanjutnya
 
-- Implementasi Hash Table
-- Perbandingan performa Linked List vs Hash Table
-- Grafik execution time
-- Analisis performa struktur data
-- Penambahan fitur Update dan Perbaikan Bug
+- Perbandingan performa ketiga struktur data secara visual (grafik execution time)
+- Analisis performa dengan dataset berukuran bervariasi (1K, 10K, 100K)
+- Penambahan fitur Update data
+- Secondary index untuk pencarian by Name di AVL Tree (AVL kedua dengan key = name)
+- Ekspor hasil statistik ke file CSV untuk analisis lebih lanjut

@@ -5,10 +5,16 @@
 #include "../include/data.h"
 #include "../include/fileHandler.h"
 
-// ── Toggle this define to benchmark either structure ──────────────────────────
-#define USE_HASH_SYSTEM // Aktifkan jika mau menggunakan hash table, default linked list
+// ── Toggle salah satu define ini untuk memilih struktur data ─────────────────
+// #define USE_LINKED_LIST
+// #define USE_HASH_SYSTEM
+#define USE_AVL_SYSTEM
 
-#ifdef USE_HASH_SYSTEM
+#ifdef USE_AVL_SYSTEM
+#include "../include/avlSystem.h"
+using DataStructure = AVLSystem;
+using DataNode = AVLNode;
+#elif defined(USE_HASH_SYSTEM)
 #include "../include/hashSystem.h"
 using DataStructure = HashSystem;
 using DataNode = HashNode;
@@ -24,7 +30,9 @@ void showMenu()
 {
       cout << endl;
       cout << "===== DUPLICATE DETECTION SYSTEM =====" << endl;
-#ifdef USE_HASH_SYSTEM
+#ifdef USE_AVL_SYSTEM
+      cout << "[Structure: AVL Tree]" << endl;
+#elif defined(USE_HASH_SYSTEM)
       cout << "[Structure: Hash Table]" << endl;
 #else
       cout << "[Structure: Linked List]" << endl;
